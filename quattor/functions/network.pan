@@ -158,8 +158,8 @@ function copy_network_params = {
         net_params = NETWORK_PARAMS;
       } else {
         net_params = nlist();
-        net_params["onboot"] = "no";
-        net_params["bootproto"] = "dhcp";
+        net_params["onboot"] = "yes";
+        #net_params["bootproto"] = "dhcp";
       };
 
       mtu_size = undef;
