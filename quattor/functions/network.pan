@@ -155,7 +155,7 @@ function copy_network_params = {
   if ( is_nlist(if_list) ) {
     foreach (if_name;v;if_list) {
       if ( if_name == boot_nic() ) {
-        net_params = NETWORK_PARAMS;
+        net_params = merge(NETWORK_PARAMS,nlist("driver",value("/hardware/cards/nic/"+to_string(if_name)+"/driver")));
       } else {
         net_params = nlist();
         net_params["onboot"] = "yes";
