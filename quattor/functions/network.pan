@@ -130,14 +130,14 @@ function get_subnet_params = {
 };
 
 
-############################################################
+###################################################################
 # This function configures all the network interfaces
-# declared in /hardware/cards/nic. Parameters are taken
-# from variable NETWORK_PARAMS (nlist) for the main (boot)
-# interface, others are configured with dhcp. For every
-# interface, it there is an entry in variable MTU, it is
+# declared in /hardware/cards/nic. It takes one or two arguments :
+# - 1st arg. : nlist with net params for the boot-nic
+# - 2nd arg. (optional) : nlist with default params for other nics
+# For every interface, it there is an entry in variable MTU, it is
 # also applied to the interface.
-############################################################
+###################################################################
 
 @{
 desc = nlist defining a non default MTU size for each interface in the system.\
