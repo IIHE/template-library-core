@@ -151,17 +151,32 @@ required = no
 variable MTU ?= nlist();
 
 function copy_network_params = {
+  #check arguments
+  if ( ARGC == 0 ) {
+    error("At least one argument must be given.");
+  } else {
+    net_params_boot = ARGV[0];
+    if ( ARGC == 2 ) {
+      net_params_default = ARGV[1];
+    };
+  };
+  
   if_list=value('/hardware/cards/nic');
   if ( is_nlist(if_list) ) {
     foreach (if_name;v;if_list) {
+      net_params = nlist();
       if ( if_name == boot_nic() ) {
-        net_params = merge(NETWORK_PARAMS,nlist("driver",value("/hardware/cards/nic/"+to_string(if_name)+"/driver")));
+        net_params = net_params_boot;
       } else {
-        net_params = nlist();
-        net_params["onboot"] = "yes";
-        #net_params["bootproto"] = "dhcp";
+        if ( !is_defined(net_params_default) ) {
+          net_params['onboot'] = 'no';
+          net_params['bootproto'] = 'dhcp';
+        } else {
+          net_params = net_params_default;
+        };
       };
 
+      net_params['driver'] = value('/hardware/cards/nic/'+to_string(if_name)+'/driver');
       mtu_size = undef;
       if_type = replace('\d+$','',if_name);
       # In the case of the boot interface, doesn't allow an explicit declaration of
