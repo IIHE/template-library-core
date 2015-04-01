@@ -173,6 +173,8 @@ function copy_network_params = {
           net_params['bootproto'] = 'dhcp';
         } else {
           net_params = net_params_default;
+          net_params['onboot'] = 'yes';
+          net_params['bootproto'] = 'static';
         };
       };
 
