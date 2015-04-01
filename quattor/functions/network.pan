@@ -130,14 +130,14 @@ function get_subnet_params = {
 };
 
 
-############################################################
+###################################################################
 # This function configures all the network interfaces
-# declared in /hardware/cards/nic. Parameters are taken
-# from variable NETWORK_PARAMS (nlist) for the main (boot)
-# interface, others are configured with dhcp. For every
-# interface, it there is an entry in variable MTU, it is
+# declared in /hardware/cards/nic. It takes one or two arguments :
+# - 1st arg. : nlist with net params for the boot-nic
+# - 2nd arg. (optional) : nlist with default params for other nics
+# For every interface, it there is an entry in variable MTU, it is
 # also applied to the interface.
-############################################################
+###################################################################
 
 @{
 desc = nlist defining a non default MTU size for each interface in the system.\
@@ -151,17 +151,36 @@ required = no
 variable MTU ?= nlist();
 
 function copy_network_params = {
+  #check arguments
+  if ( ARGC == 0 ) {
+    error("At least one argument must be given.");
+  } else {
+    net_params_boot = ARGV[0];
+    if ( ARGC == 2 ) {
+      net_params_default = ARGV[1];
+    };
+  };
+  
   if_list=value('/hardware/cards/nic');
   if ( is_nlist(if_list) ) {
     foreach (if_name;v;if_list) {
+      net_params = nlist();
       if ( if_name == boot_nic() ) {
-        net_params = NETWORK_PARAMS;
+        net_params = net_params_boot;
+        net_params['onboot'] = 'yes';
+        net_params['bootproto'] = 'static';
       } else {
-        net_params = nlist();
-        net_params["onboot"] = "yes";
-        #net_params["bootproto"] = "dhcp";
+        if ( !is_defined(net_params_default) ) {
+          net_params['onboot'] = 'no';
+          net_params['bootproto'] = 'dhcp';
+        } else {
+          net_params = net_params_default;
+          net_params['onboot'] = 'yes';
+          net_params['bootproto'] = 'static';
+        };
       };
 
+      net_params['driver'] = value('/hardware/cards/nic/'+to_string(if_name)+'/driver');
       mtu_size = undef;
       if_type = replace('\d+$','',if_name);
       # In the case of the boot interface, doesn't allow an explicit declaration of
