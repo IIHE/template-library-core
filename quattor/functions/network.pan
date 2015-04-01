@@ -167,6 +167,8 @@ function copy_network_params = {
       net_params = nlist();
       if ( if_name == boot_nic() ) {
         net_params = net_params_boot;
+        net_params['onboot'] = 'yes';
+        net_params['bootproto'] = 'static';
       } else {
         if ( !is_defined(net_params_default) ) {
           net_params['onboot'] = 'no';
